@@ -103,6 +103,32 @@ function App() {
     fetchUserData();
   }, [claims]);
 
+  useEffect(() => {
+    // Listen to changes on Market and OrderHistory tables
+    const marketChannel = supabase
+      .channel("public-db-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "Market" },
+        () => {
+          fetchMarkets();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "OrderHistory" },
+        () => {
+          fetchMarkets();
+          fetchUserData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(marketChannel);
+    };
+  }, [claims]);
+
   const handleConnectWallet = async () => {
     await supabase.auth.signInWithWeb3({
       chain: "solana",

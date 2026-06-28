@@ -595,6 +595,73 @@ app.get("/markets/:id/history", async (req, res) => {
   }
 });
 
+// POST Resolve Market
+app.post("/markets/:id/resolve", async (req, res) => {
+  const { id } = req.params;
+  const { outcome } = req.body; // "Yes" or "No"
+
+  if (outcome !== "Yes" && outcome !== "No") {
+    res.status(400).json({ error: "Invalid outcome. Must be 'Yes' or 'No'" });
+    return;
+  }
+
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const market = await tx.market.findUnique({
+        where: { id },
+      });
+
+      if (!market) {
+        throw new Error("Market not found");
+      }
+
+      if (market.resolution) {
+        throw new Error("Market has already been resolved");
+      }
+
+      // Find all winning positions
+      const winningPositions = await tx.position.findMany({
+        where: {
+          marketId: id,
+          type: outcome,
+        },
+      });
+
+      // Pay out winners ($1.00 / 100 cents per share)
+      for (const pos of winningPositions) {
+        const payout = pos.qty * 100;
+        await tx.user.update({
+          where: { id: pos.userId },
+          data: {
+            usdBalance: { increment: payout },
+          },
+        });
+      }
+
+      // Delete all positions for this market
+      await tx.position.deleteMany({
+        where: { marketId: id },
+      });
+
+      // Clear the orderbook (empty resting limit orders)
+      const updatedMarket = await tx.market.update({
+        where: { id },
+        data: {
+          resolution: outcome,
+          yesOrderbook: { bids: [], asks: [] },
+          noOrderbook: { bids: [], asks: [] },
+        },
+      });
+
+      return updatedMarket;
+    });
+
+    res.json({ message: `Market successfully resolved to ${outcome}`, market: result });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 app.listen(3000, () => {
   console.log("Server listening on port 3000");
 });

@@ -13,11 +13,35 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ prob, tradeH
       return [];
     }
 
+    let yesPool = 50;
+    let noPool = 50;
+
     return tradeHistory.map((trade) => {
+      const qty = Number(trade.qty);
+      if (trade.orderType === "Buy") {
+        if (trade.type === "Yes") {
+          yesPool += qty;
+        } else if (trade.type === "No") {
+          noPool += qty;
+        }
+      } else if (trade.orderType === "Split") {
+        yesPool += qty;
+        noPool += qty;
+      } else if (trade.orderType === "Merge") {
+        yesPool -= qty;
+        noPool -= qty;
+      }
+
+      yesPool = Math.max(0, yesPool);
+      noPool = Math.max(0, noPool);
+
+      const total = yesPool + noPool;
+      const currentProb = total > 0 ? (yesPool / total) * 100 : 50;
       const date = new Date(trade.createdAt || Date.now());
+
       return {
         time: date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        probability: trade.price === 100 ? 50 : trade.price, // Fallback if Split/Merge (100)
+        probability: Number(currentProb.toFixed(2)),
       };
     });
   };

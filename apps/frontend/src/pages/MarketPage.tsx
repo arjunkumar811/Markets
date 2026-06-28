@@ -20,6 +20,7 @@ interface Market {
   totalQty: number;
   yesPool?: number;
   noPool?: number;
+  resolution?: string | null;
 }
 
 const BACKEND_URL = "http://localhost:3000";
@@ -74,10 +75,55 @@ export const MarketPage: React.FC = () => {
     }
   };
 
+  const [resolving, setResolving] = useState(false);
+  const [resolveMessage, setResolveMessage] = useState<string | null>(null);
+
+  const handleResolve = async (outcome: "Yes" | "No") => {
+    if (!market) return;
+    setResolving(true);
+    setResolveMessage(null);
+    try {
+      const res = await axios.post(`${BACKEND_URL}/markets/${market.id}/resolve`, { outcome });
+      setResolveMessage(res.data.message);
+      await fetchMarketDetails();
+      await fetchHistory();
+    } catch (err: any) {
+      setResolveMessage(err.response?.data?.error || err.message || "Failed to resolve");
+    } finally {
+      setResolving(false);
+    }
+  };
+
   useEffect(() => {
     fetchMarketDetails();
     fetchHistory();
   }, [marketId]);
+
+  useEffect(() => {
+    if (!marketId) return;
+    const channel = supabase
+      .channel(`market-details-${marketId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "Market", filter: `id=eq.${marketId}` },
+        () => {
+          fetchMarketDetails();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "OrderHistory", filter: `marketId=eq.${marketId}` },
+        () => {
+          fetchMarketDetails();
+          fetchHistory();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [marketId, claims]);
 
   const handleTradeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -241,6 +287,49 @@ export const MarketPage: React.FC = () => {
                 <span className="font-semibold text-zinc-300">{formatUSD(market.totalQty * 100)}</span>
               </div>
             </div>
+          </div>
+
+          {/* Admin Resolution / Payout Card */}
+          <div className="p-4 rounded-xl bg-brand-card border border-brand-border flex flex-col gap-3 text-xs shadow-xl">
+            <h4 className="font-semibold text-zinc-300">
+              Admin Settlement Panel
+            </h4>
+            
+            {market.resolution ? (
+              <div className="mt-1">
+                <span className="text-[10px] text-zinc-500 block uppercase mb-1">Settlement Status</span>
+                <div className={`p-2 rounded text-center font-bold border uppercase ${
+                  market.resolution === "Yes"
+                    ? "bg-yes/10 text-yes border-yes/20"
+                    : "bg-no/10 text-no border-no/20"
+                }`}>
+                  Resolved as {market.resolution}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2 mt-1">
+                <span className="text-[10px] text-zinc-500 block uppercase">Resolve Outcome</span>
+                <div className="flex gap-2">
+                  <button
+                    disabled={resolving}
+                    onClick={() => handleResolve("Yes")}
+                    className="flex-1 py-2 rounded bg-yes text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition-all text-[11px]"
+                  >
+                    YES Wins
+                  </button>
+                  <button
+                    disabled={resolving}
+                    onClick={() => handleResolve("No")}
+                    className="flex-1 py-2 rounded bg-no text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition-all text-[11px]"
+                  >
+                    NO Wins
+                  </button>
+                </div>
+                {resolveMessage && (
+                  <p className="text-[10px] font-semibold text-zinc-400 mt-1">{resolveMessage}</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
