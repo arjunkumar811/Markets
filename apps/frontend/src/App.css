@@ -1,0 +1,599 @@
+/* Polymarket Clone Stylesheet */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --polymarket-dark-bg: #0b0e14;
+  --polymarket-card-bg: #131924;
+  --polymarket-border: #1e293b;
+  --polymarket-text: #94a3b8;
+  --polymarket-text-light: #f8fafc;
+  --polymarket-yes: #05b382;
+  --polymarket-yes-bg: rgba(5, 179, 130, 0.15);
+  --polymarket-no: #e04155;
+  --polymarket-no-bg: rgba(224, 65, 85, 0.15);
+  --polymarket-accent: #3b82f6;
+  --font-family: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--polymarket-dark-bg);
+  color: var(--polymarket-text);
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Reset index.css limits */
+#root {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border: none !important;
+  display: block !important;
+  min-height: 100vh;
+}
+
+.polymarket-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header & Navbar */
+.polymarket-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: #0b0e14;
+  border-bottom: 1px solid var(--polymarket-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--polymarket-text-light);
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  fill: var(--polymarket-accent);
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #161f30;
+  border: 1px solid var(--polymarket-border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  width: 320px;
+}
+
+.search-bar input {
+  background: none;
+  border: none;
+  color: var(--polymarket-text-light);
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+}
+
+.search-bar input::placeholder {
+  color: #64748b;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-balance-badge {
+  background-color: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--polymarket-accent);
+}
+
+.wallet-btn {
+  background-color: var(--polymarket-accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.wallet-btn:hover {
+  opacity: 0.9;
+}
+
+.wallet-btn.connected {
+  background-color: #1e293b;
+  border: 1px solid var(--polymarket-border);
+  color: var(--polymarket-text-light);
+}
+
+/* Category Filter Bar */
+.categories-bar {
+  display: flex;
+  gap: 12px;
+  padding: 10px 24px;
+  background-color: #0b0e14;
+  border-bottom: 1px solid var(--polymarket-border);
+  overflow-x: auto;
+}
+
+.category-tab {
+  background: none;
+  border: none;
+  color: var(--polymarket-text);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.category-tab:hover {
+  color: var(--polymarket-text-light);
+  background-color: #1e293b;
+}
+
+.category-tab.active {
+  color: var(--polymarket-text-light);
+  background-color: #1e293b;
+  font-weight: 600;
+}
+
+/* Layout Grid */
+.dashboard-layout {
+  display: flex;
+  flex: 1;
+  background-color: var(--polymarket-dark-bg);
+}
+
+.sidebar {
+  width: 220px;
+  border-right: 1px solid var(--polymarket-border);
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--polymarket-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sidebar-nav-item:hover,
+.sidebar-nav-item.active {
+  color: var(--polymarket-text-light);
+  background-color: #131924;
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.content-row {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+}
+
+/* Market Cards Grid */
+.markets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.market-card {
+  background-color: var(--polymarket-card-bg);
+  border: 1px solid var(--polymarket-border);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.market-card:hover {
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+}
+
+.market-card-header {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.market-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.market-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--polymarket-text-light);
+  line-height: 1.4;
+}
+
+.market-card-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.volume-tag {
+  color: var(--polymarket-text);
+}
+
+.probability-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chance-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--polymarket-yes);
+}
+
+.outcome-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.outcome-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.outcome-btn.yes {
+  background-color: var(--polymarket-yes-bg);
+  color: var(--polymarket-yes);
+}
+
+.outcome-btn.no {
+  background-color: var(--polymarket-no-bg);
+  color: var(--polymarket-no);
+}
+
+/* Detail View */
+.market-detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.market-detail-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.market-detail-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--polymarket-text-light);
+}
+
+/* Orderbook View */
+.orderbook-card {
+  background-color: var(--polymarket-card-bg);
+  border: 1px solid var(--polymarket-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.orderbook-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--polymarket-text-light);
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.orderbook-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.orderbook-side {
+  display: flex;
+  flex-direction: column;
+}
+
+.side-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.side-title.yes { color: var(--polymarket-yes); }
+.side-title.no { color: var(--polymarket-no); }
+
+.orderbook-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.price-col {
+  font-weight: 600;
+  color: var(--polymarket-text-light);
+}
+
+.qty-col {
+  color: var(--polymarket-text);
+}
+
+/* Trading Widget */
+.trading-widget {
+  background-color: var(--polymarket-card-bg);
+  border: 1px solid var(--polymarket-border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 76px;
+}
+
+.trading-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--polymarket-border);
+}
+
+.tab-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--polymarket-text);
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--polymarket-text-light);
+}
+
+.tab-btn.active {
+  color: var(--polymarket-text-light);
+  border-bottom-color: var(--polymarket-accent);
+}
+
+.outcome-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.outcome-select-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--polymarket-border);
+  background-color: transparent;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.outcome-select-btn.yes {
+  color: var(--polymarket-yes);
+  background-color: rgba(5, 179, 130, 0.05);
+}
+
+.outcome-select-btn.yes.active {
+  background-color: var(--polymarket-yes);
+  color: white;
+  border-color: var(--polymarket-yes);
+}
+
+.outcome-select-btn.no {
+  color: var(--polymarket-no);
+  background-color: rgba(224, 65, 85, 0.05);
+}
+
+.outcome-select-btn.no.active {
+  background-color: var(--polymarket-no);
+  color: white;
+  border-color: var(--polymarket-no);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--polymarket-text);
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #1e293b;
+  border: 1px solid var(--polymarket-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.input-wrapper input {
+  background: none;
+  border: none;
+  color: var(--polymarket-text-light);
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  outline: none;
+}
+
+.input-suffix {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--polymarket-text);
+}
+
+.trade-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.02);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.action-btn {
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.action-btn.yes {
+  background-color: var(--polymarket-yes);
+  color: white;
+}
+
+.action-btn.no {
+  background-color: var(--polymarket-no);
+  color: white;
+}
+
+.action-btn.split-merge {
+  background-color: var(--polymarket-accent);
+  color: white;
+}
+
+.action-btn:hover {
+  opacity: 0.95;
+}
+
+/* User Positions & History table */
+.positions-card {
+  margin-top: 24px;
+  background-color: var(--polymarket-card-bg);
+  border: 1px solid var(--polymarket-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.table-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--polymarket-text-light);
+  margin-bottom: 12px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.data-table th {
+  color: var(--polymarket-text);
+  font-weight: 500;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--polymarket-border);
+}
+
+.data-table td {
+  color: var(--polymarket-text-light);
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.pos-yes {
+  color: var(--polymarket-yes);
+  font-weight: 600;
+}
+
+.pos-no {
+  color: var(--polymarket-no);
+  font-weight: 600;
+}
